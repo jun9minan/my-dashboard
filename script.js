@@ -94,17 +94,17 @@ function getEventsForDate(year, month, day) {
     return eventsByDate[dateKey] || [];
 }
 
-function displayScheduleForDate(year, month, day) {
+function updateSelectedDateSchedule(year, month, day) {
     const dateKey = getDateKey(year, month, day);
     const events = eventsByDate[dateKey] || [];
-    const dateDisplay = document.querySelector('.schedule-events .events-section:first-child h3');
-    const eventList = document.querySelector('.schedule-events .events-section:first-child .event-list');
+    const dateDisplay = document.getElementById('selectedDateTitle');
+    const eventList = document.getElementById('selectedEventList');
 
     const dateStr = `${year}년 ${month}월 ${day}일`;
     const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][new Date(year, month - 1, day).getDay()];
 
     if (dateDisplay) {
-        dateDisplay.textContent = `📍 ${dateStr} (${dayOfWeek})`;
+        dateDisplay.textContent = `📌 ${dateStr} (${dayOfWeek})`;
     }
 
     if (eventList) {
@@ -180,7 +180,7 @@ function generateCalendar(year = 2026, month = 4) {
             document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('today'));
             dayCell.classList.add('today');
             selectedDate = i;
-            displayScheduleForDate(year, month, i);
+            updateSelectedDateSchedule(year, month, i);
             updateWeekSummary(year, month, i);
         });
 
@@ -222,14 +222,14 @@ function updateWeekSummary(year, month, selectedDay) {
             clickedDate.setDate(firstDayOfWeek.getDate() + idx);
             const clickedDay = clickedDate.getDate();
             generateCalendar(clickedDate.getFullYear(), clickedDate.getMonth() + 1);
-            displayScheduleForDate(clickedDate.getFullYear(), clickedDate.getMonth() + 1, clickedDay);
+            updateSelectedDateSchedule(clickedDate.getFullYear(), clickedDate.getMonth() + 1, clickedDay);
             updateWeekSummary(clickedDate.getFullYear(), clickedDate.getMonth() + 1, clickedDay);
         });
     });
 }
 
 generateCalendar();
-displayScheduleForDate(currentYear, currentMonth, selectedDate);
+updateSelectedDateSchedule(currentYear, currentMonth, selectedDate);
 updateWeekSummary(currentYear, currentMonth, selectedDate);
 
 // Calendar navigation
@@ -240,7 +240,7 @@ document.querySelector('.calendar-prev')?.addEventListener('click', function() {
         currentYear--;
     }
     generateCalendar(currentYear, currentMonth);
-    displayScheduleForDate(currentYear, currentMonth, 1);
+    updateSelectedDateSchedule(currentYear, currentMonth, 1);
     updateWeekSummary(currentYear, currentMonth, 1);
 });
 
@@ -251,7 +251,7 @@ document.querySelector('.calendar-next')?.addEventListener('click', function() {
         currentYear++;
     }
     generateCalendar(currentYear, currentMonth);
-    displayScheduleForDate(currentYear, currentMonth, 1);
+    updateSelectedDateSchedule(currentYear, currentMonth, 1);
     updateWeekSummary(currentYear, currentMonth, 1);
 });
 
