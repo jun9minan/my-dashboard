@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 <body>
     <div class="app">
@@ -21,7 +22,7 @@
                 </div>
                 <div class="header-right">
                     <div class="datetime">
-                        <div class="time" id="currentTime">08:00</div>
+                        <div class="time" id="currentTime">08:06</div>
                         <div class="date" id="currentDate">2026년 4월 9일</div>
                     </div>
                 </div>
@@ -41,22 +42,22 @@
                         <div class="weather-display">
                             <div class="weather-icon">🌤️</div>
                             <div class="weather-main">
-                                <div class="temp">24<span class="unit">°</span></div>
-                                <div class="location">서울, 강남구</div>
+                                <div class="temp">23<span class="unit">°</span></div>
+                                <div class="location">수원시, 팔달구</div>
                             </div>
                         </div>
                         <div class="weather-details">
                             <div class="weather-row">
                                 <span class="label">최고 기온</span>
-                                <span class="value">27°C</span>
+                                <span class="value">25°C</span>
                             </div>
                             <div class="weather-row">
                                 <span class="label">최저 기온</span>
-                                <span class="value">18°C</span>
+                                <span class="value">16°C</span>
                             </div>
                             <div class="weather-row">
                                 <span class="label">습도</span>
-                                <span class="value">62%</span>
+                                <span class="value">58%</span>
                             </div>
                             <div class="outfit-recommend">🧥 가디건 한 장 추천</div>
                         </div>
@@ -71,17 +72,17 @@
                     <div class="card-content">
                         <div class="todo-container">
                             <div class="todo-list" id="todoList">
-                                <div class="todo-item completed">
+                                <div class="todo-item completed" data-id="1">
                                     <input type="checkbox" class="todo-check" checked>
                                     <span class="todo-text">아침 산책 30분</span>
                                     <button class="todo-delete" aria-label="삭제">×</button>
                                 </div>
-                                <div class="todo-item">
+                                <div class="todo-item" data-id="2">
                                     <input type="checkbox" class="todo-check">
                                     <span class="todo-text">프로젝트 기획서 작성</span>
                                     <button class="todo-delete" aria-label="삭제">×</button>
                                 </div>
-                                <div class="todo-item">
+                                <div class="todo-item" data-id="3">
                                     <input type="checkbox" class="todo-check">
                                     <span class="todo-text">팀 회의 참석</span>
                                     <button class="todo-delete" aria-label="삭제">×</button>
@@ -107,7 +108,7 @@
                             <button id="memoSaveBtn" class="memo-save-btn">저장</button>
                         </div>
                         <div class="memo-list" id="memoList">
-                            <div class="memo-item">
+                            <div class="memo-item" data-id="1">
                                 <div class="memo-item-title">📌 프로젝트 아이디어</div>
                                 <div class="memo-item-text">새로운 대시보드 기능 개선 계획...</div>
                             </div>
@@ -199,21 +200,21 @@
                                 <div class="market-name">S&P 500</div>
                                 <div class="market-info">
                                     <div class="market-price">$5,421.00</div>
-                                    <div class="market-change up">+$121.00 +2.28%</div>
+                                    <div class="market-change up">+2.28%</div>
                                 </div>
                             </div>
                             <div class="market-item" data-market="nasdaq">
                                 <div class="market-name">나스닥 100</div>
                                 <div class="market-info">
                                     <div class="market-price">$18,750.50</div>
-                                    <div class="market-change up">+$445.50 +2.43%</div>
+                                    <div class="market-change up">+2.43%</div>
                                 </div>
                             </div>
                             <div class="market-item" data-market="dow">
                                 <div class="market-name">다우존스 지수</div>
                                 <div class="market-info">
                                     <div class="market-price">$43,125.75</div>
-                                    <div class="market-change down">-$275.75 -0.64%</div>
+                                    <div class="market-change down">-0.64%</div>
                                 </div>
                             </div>
                         </div>
@@ -237,19 +238,19 @@
                         <div class="finance-stats">
                             <div class="stat-item">
                                 <span class="stat-label">총 자산</span>
-                                <span class="stat-value">₩425,000,000</span>
+                                <span class="stat-value">₩425M</span>
                             </div>
                             <div class="stat-item">
                                 <span class="stat-label">월간 수입</span>
-                                <span class="stat-value income">+₩8,500,000</span>
+                                <span class="stat-value income">+₩8.5M</span>
                             </div>
                             <div class="stat-item">
                                 <span class="stat-label">월간 지출</span>
-                                <span class="stat-value expense">-₩3,200,000</span>
+                                <span class="stat-value expense">-₩3.2M</span>
                             </div>
                             <div class="stat-item total">
                                 <span class="stat-label">월간 순 저축</span>
-                                <span class="stat-value">₩5,300,000</span>
+                                <span class="stat-value">₩5.3M</span>
                             </div>
                         </div>
 
@@ -261,6 +262,23 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="todoModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2>할 일 상세</h2>
+            <div class="modal-body" id="todoModalBody"></div>
+        </div>
+    </div>
+
+    <div id="memoModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <h2>메모 상세</h2>
+            <div class="modal-body" id="memoModalBody"></div>
+        </div>
     </div>
 
     <script src="script.js"></script>

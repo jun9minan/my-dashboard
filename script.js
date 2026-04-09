@@ -1,3 +1,6 @@
+// ===== PLUGIN REGISTRATION =====
+Chart.register(ChartDataLabels);
+
 // ===== THEME MANAGEMENT =====
 const themeBtn = document.getElementById('themeBtn');
 
@@ -69,46 +72,69 @@ const todoInput = document.getElementById('todoInput');
 const todoAddBtn = document.getElementById('todoAddBtn');
 const todoList = document.getElementById('todoList');
 
-todoAddBtn.addEventListener('click', addTodo);
-todoInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') addTodo();
-});
+// Todo item data storage
+let todoHistory = {
+    '1': { title: '아침 산책 30분', entries: [{ time: '2026-04-09 06:30', completed: true }] },
+    '2': { title: '프로젝트 기획서 작성', entries: [{ time: '2026-04-09 09:00', completed: false }] },
+    '3': { title: '팀 회의 참석', entries: [{ time: '2026-04-09 10:30', completed: false }] }
+};
+
+let nextTodoId = 4;
+
+function setupTodoItemHandlers(item, id) {
+    item.querySelector('.todo-check').addEventListener('change', function() {
+        item.classList.toggle('completed');
+    });
+
+    item.querySelector('.todo-delete').addEventListener('click', function(e) {
+        e.stopPropagation();
+        delete todoHistory[id];
+        item.remove();
+    });
+
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', function(e) {
+        if (!e.target.closest('.todo-check') && !e.target.closest('.todo-delete')) {
+            openTodoModal(id);
+        }
+    });
+}
 
 function addTodo() {
     const text = todoInput.value.trim();
     if (!text) return;
 
+    const id = String(nextTodoId++);
     const item = document.createElement('div');
     item.className = 'todo-item';
+    item.setAttribute('data-id', id);
     item.innerHTML = `
         <input type="checkbox" class="todo-check">
         <span class="todo-text">${escapeHtml(text)}</span>
         <button class="todo-delete" aria-label="삭제">×</button>
     `;
 
-    item.querySelector('.todo-check').addEventListener('change', function() {
-        item.classList.toggle('completed');
-    });
+    setupTodoItemHandlers(item, id);
 
-    item.querySelector('.todo-delete').addEventListener('click', function() {
-        item.remove();
-    });
+    // Add to history
+    const now = new Date();
+    const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    todoHistory[id] = { title: text, entries: [{ time: timeStr, completed: false }] };
 
     todoList.insertBefore(item, todoList.firstChild);
     todoInput.value = '';
     todoInput.focus();
 }
 
-document.querySelectorAll('.todo-item .todo-check').forEach(check => {
-    check.addEventListener('change', function() {
-        this.closest('.todo-item').classList.toggle('completed');
-    });
+todoAddBtn.addEventListener('click', addTodo);
+todoInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') addTodo();
 });
 
-document.querySelectorAll('.todo-item .todo-delete').forEach(btn => {
-    btn.addEventListener('click', function() {
-        this.closest('.todo-item').remove();
-    });
+// Setup existing todo items
+document.querySelectorAll('.todo-item').forEach(item => {
+    const id = item.getAttribute('data-id');
+    setupTodoItemHandlers(item, id);
 });
 
 // ===== MEMO MANAGEMENT =====
@@ -117,10 +143,19 @@ const memoTextInput = document.getElementById('memoText');
 const memoSaveBtn = document.getElementById('memoSaveBtn');
 const memoList = document.getElementById('memoList');
 
-memoSaveBtn.addEventListener('click', saveMemo);
-memoTextInput.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key === 'Enter') saveMemo();
-});
+// Memo item data storage
+let memoHistory = {
+    '1': { title: '📌 프로젝트 아이디어', entries: [{ time: '2026-04-08 14:20', content: '새로운 대시보드 기능 개선 계획. 사용자 경험을 고려한 UI/UX 업그레이드 필요.' }] }
+};
+
+let nextMemoId = 2;
+
+function setupMemoItemHandlers(item, id) {
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', function() {
+        openMemoModal(id);
+    });
+}
 
 function saveMemo() {
     const title = memoTitleInput.value.trim();
@@ -131,18 +166,41 @@ function saveMemo() {
         return;
     }
 
+    const id = String(nextMemoId++);
     const item = document.createElement('div');
     item.className = 'memo-item';
+    item.setAttribute('data-id', id);
     item.innerHTML = `
         <div class="memo-item-title">📝 ${escapeHtml(title)}</div>
         <div class="memo-item-text">${escapeHtml(text)}</div>
     `;
+
+    setupMemoItemHandlers(item, id);
+
+    // Add to history
+    const now = new Date();
+    const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    memoHistory[id] = {
+        title: `📝 ${title}`,
+        entries: [{ time: timeStr, content: text }]
+    };
 
     memoList.insertBefore(item, memoList.firstChild);
     memoTitleInput.value = '';
     memoTextInput.value = '';
     memoTitleInput.focus();
 }
+
+memoSaveBtn.addEventListener('click', saveMemo);
+memoTextInput.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'Enter') saveMemo();
+});
+
+// Setup existing memo items
+document.querySelectorAll('.memo-item').forEach(item => {
+    const id = item.getAttribute('data-id');
+    setupMemoItemHandlers(item, id);
+});
 
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -154,20 +212,20 @@ function escapeHtml(text) {
 const marketData = {
     sp500: {
         name: 'S&P 500',
-        labels: ['2주전', '1.5주전', '1주전', '5일전', '3일전', '어제', '오늘'],
-        prices: [5180, 5250, 5300, 5350, 5380, 5400, 5421],
+        labels: ['52주전', '48주전', '44주전', '40주전', '36주전', '32주전', '28주전', '24주전', '20주전', '16주전', '12주전', '8주전', '4주전', '오늘'],
+        prices: [4800, 4850, 4920, 4980, 5050, 5100, 5150, 5200, 5250, 5300, 5350, 5380, 5400, 5421],
         color: '#2d5be3'
     },
     nasdaq: {
         name: '나스닥 100',
-        labels: ['2주전', '1.5주전', '1주전', '5일전', '3일전', '어제', '오늘'],
-        prices: [18100, 18350, 18500, 18600, 18700, 18750, 18750.5],
+        labels: ['52주전', '48주전', '44주전', '40주전', '36주전', '32주전', '28주전', '24주전', '20주전', '16주전', '12주전', '8주전', '4주전', '오늘'],
+        prices: [17200, 17400, 17650, 17900, 18150, 18350, 18500, 18600, 18700, 18750, 18800, 18850, 18750, 18750.50],
         color: '#16a34a'
     },
     dow: {
         name: '다우존스 지수',
-        labels: ['2주전', '1.5주전', '1주전', '5일전', '3일전', '어제', '오늘'],
-        prices: [43800, 43600, 43400, 43200, 43150, 43401, 43125.75],
+        labels: ['52주전', '48주전', '44주전', '40주전', '36주전', '32주전', '28주전', '24주전', '20주전', '16주전', '12주전', '8주전', '4주전', '오늘'],
+        prices: [41500, 41800, 42100, 42400, 42700, 43000, 43200, 43300, 43350, 43400, 43450, 43300, 43200, 43125.75],
         color: '#dc2626'
     }
 };
@@ -229,6 +287,17 @@ function initMarketChart(marketKey = 'sp500') {
             },
             plugins: {
                 legend: { display: false },
+                datalabels: {
+                    display: true,
+                    anchor: 'end',
+                    align: 'top',
+                    offset: 8,
+                    color: data.color,
+                    font: { size: 11, weight: '600', family: "'DM Mono', monospace" },
+                    formatter: function(value) {
+                        return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                    }
+                },
                 tooltip: {
                     backgroundColor: colors.tooltip,
                     titleColor: '#fff',
@@ -242,7 +311,7 @@ function initMarketChart(marketKey = 'sp500') {
                     callbacks: {
                         label: function(context) {
                             const value = context.parsed.y;
-                            return 'K$' + (value / 1000).toFixed(1);
+                            return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
                         }
                     }
                 }
@@ -260,7 +329,7 @@ function initMarketChart(marketKey = 'sp500') {
                         font: { size: 12, family: "'DM Mono', monospace", weight: '500' },
                         padding: 12,
                         callback: function(value) {
-                            return 'K$' + (value / 1000).toFixed(0);
+                            return '$' + (value / 1000).toFixed(0) + 'K';
                         }
                     }
                 },
@@ -389,6 +458,72 @@ document.querySelectorAll('.market-item').forEach(item => {
         this.classList.add('active');
         const marketKey = this.getAttribute('data-market');
         initMarketChart(marketKey);
+    });
+});
+
+// ===== MODAL MANAGEMENT =====
+const todoModal = document.getElementById('todoModal');
+const memoModal = document.getElementById('memoModal');
+const todoModalBody = document.getElementById('todoModalBody');
+const memoModalBody = document.getElementById('memoModalBody');
+
+// Open todo modal
+function openTodoModal(id) {
+    const data = todoHistory[id] || {};
+    let html = `<div class="modal-detail"><h3>${data.title || '제목 없음'}</h3>`;
+
+    if (data.entries && data.entries.length > 0) {
+        html += '<div class="modal-entries">';
+        data.entries.forEach(entry => {
+            const status = entry.completed ? '✓ 완료' : '○ 미완료';
+            html += `<div class="modal-entry">
+                <div class="entry-time">${entry.time}</div>
+                <div class="entry-status">${status}</div>
+            </div>`;
+        });
+        html += '</div>';
+    }
+    html += '</div>';
+
+    todoModalBody.innerHTML = html;
+    todoModal.classList.add('active');
+}
+
+// Open memo modal
+function openMemoModal(id) {
+    const data = memoHistory[id] || {};
+    let html = `<div class="modal-detail"><h3>${data.title || '제목 없음'}</h3>`;
+
+    if (data.entries && data.entries.length > 0) {
+        html += '<div class="modal-entries">';
+        data.entries.forEach(entry => {
+            html += `<div class="modal-entry">
+                <div class="entry-time">${entry.time}</div>
+                <div class="entry-content">${entry.content}</div>
+            </div>`;
+        });
+        html += '</div>';
+    }
+    html += '</div>';
+
+    memoModalBody.innerHTML = html;
+    memoModal.classList.add('active');
+}
+
+// Close modal on background click
+todoModal.addEventListener('click', function(e) {
+    if (e.target === todoModal) todoModal.classList.remove('active');
+});
+
+memoModal.addEventListener('click', function(e) {
+    if (e.target === memoModal) memoModal.classList.remove('active');
+});
+
+// Close button handlers
+document.querySelectorAll('.modal-close').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const modal = this.closest('.modal');
+        modal.classList.remove('active');
     });
 });
 
