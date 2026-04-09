@@ -1,12 +1,5 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-/* 색상 변수 */
+/* ===== VARIABLES ===== */
 :root {
-    /* 라이트 모드 */
     --bg: #f7f6f3;
     --surface: #ffffff;
     --border: #e8e6e0;
@@ -18,8 +11,10 @@
     --green-light: #edf7f2;
     --red: #d94040;
     --red-light: #fdf0f0;
+
     --radius: 12px;
     --radius-sm: 8px;
+    --transition: 0.15s ease;
 }
 
 body.dark-mode {
@@ -28,180 +23,203 @@ body.dark-mode {
     --border: #3a3934;
     --text: #f7f6f3;
     --muted: #8a8880;
-    --accent-light: rgba(45, 91, 227, 0.15);
+    --accent-light: rgba(45, 91, 227, 0.12);
+}
+
+/* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
-    min-height: 100vh;
-    padding: 2rem;
     font-size: 14px;
     line-height: 1.6;
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background var(--transition), color var(--transition);
 }
 
-/* 컨테이너 */
-.container {
-    max-width: 1280px;
-    margin: 0 auto;
+/* ===== APP LAYOUT ===== */
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-/* 헤더 */
+/* ===== HEADER ===== */
 .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    transition: background var(--transition), border-color var(--transition);
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--border);
+    align-items: center;
 }
 
-.header-left h1 {
-    font-size: 22px;
-    font-weight: 500;
-    letter-spacing: -0.5px;
-    margin-bottom: 4px;
-}
-
-.header-left p {
-    color: var(--muted);
-    font-size: 13px;
-}
-
-.header-right {
+.header-left {
     display: flex;
     align-items: center;
     gap: 1.5rem;
 }
 
-.datetime {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-}
-
-#timeDisplay {
-    font-size: 20px;
-    font-weight: 400;
+.logo {
+    font-size: 22px;
+    font-weight: 500;
     letter-spacing: -0.5px;
-    color: var(--text);
 }
 
-#dateDisplay {
-    font-size: 13px;
-    color: var(--muted);
-}
-
-/* 테마 토글 버튼 */
-.theme-toggle {
+.theme-btn {
     width: 40px;
     height: 40px;
     border: 1px solid var(--border);
-    background-color: var(--surface);
+    background: var(--surface);
     border-radius: var(--radius-sm);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
-    transition: all 0.15s;
+    transition: all var(--transition);
 }
 
-.theme-toggle:hover {
-    background-color: var(--bg);
+.theme-btn:hover {
     border-color: var(--accent);
+    background: var(--bg);
 }
 
-/* 메인 컨텐츠 */
-.main-content {
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.datetime {
+    text-align: right;
+}
+
+.time {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    color: var(--text);
+}
+
+.date {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main {
+    flex: 1;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-/* 그리드 */
+/* ===== GRID ===== */
 .grid {
     display: grid;
     gap: 1rem;
 }
 
 .grid-3 {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
-/* 카드 */
+/* ===== CARD ===== */
 .card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.25rem;
-    transition: all 0.15s;
+    overflow: hidden;
+    transition: border-color var(--transition), box-shadow var(--transition);
 }
 
 .card:hover {
     border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(45, 91, 227, 0.08);
 }
 
-.card-label {
-    font-size: 11px;
+.card-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.card-header h2 {
+    font-size: 13px;
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
-.card-body {
+.card-content {
+    padding: 1.25rem;
+}
+
+/* ===== WEATHER CARD ===== */
+.weather-display {
     display: flex;
-    flex-direction: column;
     gap: 1rem;
-}
-
-/* ===== 날씨 카드 ===== */
-.weather-main {
-    display: flex;
-    gap: 0.75rem;
     margin-bottom: 1rem;
 }
 
 .weather-icon {
-    font-size: 48px;
+    font-size: 56px;
     line-height: 1;
 }
 
-.weather-info {
+.weather-main {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
 }
 
-.weather-temp {
-    font-size: 40px;
+.temp {
+    font-size: 48px;
     font-weight: 300;
-    letter-spacing: -1px;
+    letter-spacing: -2px;
     line-height: 1;
 }
 
-.weather-temp .unit {
-    font-size: 18px;
+.temp .unit {
+    font-size: 20px;
     color: var(--muted);
 }
 
-.weather-location {
+.location {
     font-size: 13px;
     color: var(--muted);
     margin-top: 4px;
 }
 
 .weather-details {
-    padding-top: 1rem;
     border-top: 1px solid var(--border);
+    padding-top: 1rem;
 }
 
 .weather-row {
@@ -209,155 +227,146 @@ body {
     justify-content: space-between;
     font-size: 12px;
     color: var(--muted);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
-.weather-row span:last-child {
+.weather-row .label {
+    color: var(--muted);
+}
+
+.weather-row .value {
     color: var(--text);
     font-weight: 500;
+    font-family: 'DM Mono', monospace;
 }
 
-.outfit-tag {
+.outfit-recommend {
     margin-top: 0.75rem;
-    display: inline-block;
+    padding: 0.5rem 0.75rem;
     background: var(--accent-light);
     color: var(--accent);
-    border-radius: 4px;
-    padding: 4px 10px;
+    border-radius: var(--radius-sm);
     font-size: 12px;
     font-weight: 500;
+    text-align: center;
 }
 
-/* ===== To do 카드 ===== */
+/* ===== TODO CARD ===== */
+.todo-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 .todo-list {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    margin-bottom: 1rem;
 }
 
 .todo-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.6rem 0.75rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
+    padding: 0.6rem;
     background: var(--bg);
-    transition: background 0.15s;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition);
 }
 
 .todo-item:hover {
     background: var(--surface);
-}
-
-.todo-item.done {
-    opacity: 0.45;
-}
-
-.todo-check {
-    width: 16px;
-    height: 16px;
-    border: 1.5px solid var(--border);
-    border-radius: 4px;
-    cursor: pointer;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-}
-
-.todo-item.done .todo-check {
-    background: var(--accent);
     border-color: var(--accent);
 }
 
-.todo-check-mark {
-    display: none;
-    color: white;
-    font-size: 10px;
-    font-weight: 600;
+.todo-item.completed {
+    opacity: 0.5;
 }
 
-.todo-item.done .todo-check-mark {
-    display: block;
-}
-
-.todo-text {
-    font-size: 13px;
-    flex: 1;
-}
-
-.todo-item.done .todo-text {
+.todo-item.completed .todo-text {
     text-decoration: line-through;
 }
 
-.todo-del {
+.todo-check {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+.todo-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text);
+}
+
+.todo-delete {
     background: none;
     border: none;
     cursor: pointer;
     color: var(--muted);
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1;
-    opacity: 0;
-    transition: opacity 0.15s, color 0.15s;
     padding: 0;
+    opacity: 0;
+    transition: opacity var(--transition), color var(--transition);
 }
 
-.todo-item:hover .todo-del {
+.todo-item:hover .todo-delete {
     opacity: 1;
     color: var(--red);
 }
 
-.todo-input-row {
+.todo-input {
     display: flex;
     gap: 0.5rem;
 }
 
-.todo-input {
+.todo-input input {
     flex: 1;
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 0.5rem 0.75rem;
     background: var(--bg);
     color: var(--text);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.75rem;
     outline: none;
-    transition: border 0.15s;
+    transition: border var(--transition);
 }
 
-.todo-input:focus {
+.todo-input input:focus {
     border-color: var(--accent);
 }
 
-.todo-add {
+.todo-input button {
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
+    padding: 0.5rem 1rem;
     background: var(--accent);
     color: white;
     border: none;
     border-radius: var(--radius-sm);
-    padding: 0.5rem 1rem;
     cursor: pointer;
-    transition: opacity 0.15s;
     font-weight: 500;
+    transition: opacity var(--transition);
 }
 
-.todo-add:hover {
+.todo-input button:hover {
     opacity: 0.85;
 }
 
-/* ===== 메모 카드 ===== */
-.memo-input-wrapper {
+/* ===== MEMO CARD ===== */
+.memo-editor {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-bottom: 1rem;
     padding: 1rem;
     background: var(--bg);
     border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
     border: 1px solid var(--border);
 }
 
@@ -369,7 +378,6 @@ body {
     background: transparent;
     color: var(--text);
     outline: none;
-    padding: 0;
 }
 
 .memo-title-input::placeholder {
@@ -385,7 +393,6 @@ body {
     outline: none;
     resize: none;
     min-height: 80px;
-    padding: 0;
 }
 
 .memo-textarea::placeholder {
@@ -396,14 +403,14 @@ body {
     align-self: flex-start;
     font-family: 'DM Sans', sans-serif;
     font-size: 12px;
+    padding: 0.4rem 0.8rem;
     background: var(--accent);
     color: white;
     border: none;
     border-radius: var(--radius-sm);
-    padding: 0.4rem 0.8rem;
     cursor: pointer;
-    transition: opacity 0.15s;
     font-weight: 500;
+    transition: opacity var(--transition);
 }
 
 .memo-save-btn:hover {
@@ -411,11 +418,11 @@ body {
 }
 
 .memo-list {
+    max-height: 180px;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    max-height: 200px;
-    overflow-y: auto;
 }
 
 .memo-item {
@@ -425,19 +432,14 @@ body {
     border: 1px solid var(--border);
 }
 
-.memo-preview {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.memo-title {
+.memo-item-title {
     font-size: 12px;
     font-weight: 500;
     color: var(--text);
+    margin-bottom: 4px;
 }
 
-.memo-text {
+.memo-item-text {
     font-size: 11px;
     color: var(--muted);
     overflow: hidden;
@@ -445,42 +447,61 @@ body {
     white-space: nowrap;
 }
 
-/* ===== 일정 카드 ===== */
-.schedule-content {
+/* ===== SCHEDULE CARD ===== */
+.schedule-grid {
     display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 1.5rem;
+    grid-template-columns: 240px 1fr;
+    gap: 2rem;
 }
 
-.mini-calendar {
+/* Calendar */
+.schedule-calendar {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
 }
 
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 12px;
-    font-weight: 500;
+    gap: 0.5rem;
 }
 
-.calendar-nav {
+.calendar-header button {
     background: none;
     border: none;
     cursor: pointer;
     color: var(--muted);
     padding: 4px 8px;
-    border-radius: 4px;
-    transition: background 0.15s;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition);
 }
 
-.calendar-nav:hover {
+.calendar-header button:hover {
     background: var(--bg);
+    color: var(--text);
 }
 
-.calendar-grid {
+.calendar-title {
+    font-size: 12px;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 4px;
+}
+
+.calendar-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 4px;
@@ -494,19 +515,16 @@ body {
     font-size: 11px;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.15s;
-    color: var(--muted);
-    font-weight: 500;
     border: 1px solid transparent;
+    transition: all var(--transition);
 }
 
-.calendar-day.header {
+.calendar-day.empty {
     cursor: default;
-    font-weight: 600;
-    font-size: 10px;
 }
 
-.calendar-day:not(.header):hover {
+.calendar-day:not(.empty):hover {
+    border-color: var(--accent);
     background: var(--bg);
 }
 
@@ -516,17 +534,18 @@ body {
     font-weight: 600;
 }
 
+/* Events */
 .schedule-events {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
-.schedule-section h4 {
-    font-size: 12px;
+.events-section h3 {
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     color: var(--muted);
     margin-bottom: 0.75rem;
 }
@@ -543,11 +562,17 @@ body {
     padding: 0.5rem 0;
     font-size: 13px;
     color: var(--text);
+    border-bottom: 1px solid var(--border);
+}
+
+.event-item:last-child {
+    border-bottom: none;
 }
 
 .event-time {
     color: var(--accent);
     font-weight: 500;
+    font-family: 'DM Mono', monospace;
     min-width: 45px;
 }
 
@@ -569,14 +594,15 @@ body {
     gap: 0.4rem;
     padding: 0.6rem;
     background: var(--bg);
+    border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: all 0.15s;
-    border: 1px solid var(--border);
+    transition: all var(--transition);
 }
 
 .week-day:hover {
     border-color: var(--accent);
+    background: var(--accent-light);
 }
 
 .week-day.today {
@@ -584,10 +610,10 @@ body {
     border-color: var(--accent);
 }
 
-.day-label {
+.day-name {
     font-size: 10px;
-    color: var(--muted);
     font-weight: 600;
+    color: var(--muted);
     text-transform: uppercase;
 }
 
@@ -597,12 +623,17 @@ body {
     color: var(--text);
 }
 
-/* ===== 증시 카드 ===== */
+/* ===== MARKET CARD ===== */
+.market-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
 .market-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    margin-bottom: 1.5rem;
 }
 
 .market-item {
@@ -611,11 +642,12 @@ body {
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all var(--transition);
 }
 
 .market-item:hover {
     border-color: var(--accent);
+    background: var(--accent-light);
 }
 
 .market-item.active {
@@ -623,34 +655,28 @@ body {
     border-color: var(--accent);
 }
 
-.market-header {
+.market-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+}
+
+.market-info {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
 }
 
-.market-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-}
-
-.market-right {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-}
-
 .market-price {
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
     color: var(--text);
+    font-weight: 500;
 }
 
 .market-change {
-    font-family: 'Courier New', monospace;
+    font-family: 'DM Mono', monospace;
     font-size: 11px;
     padding: 2px 6px;
     border-radius: 4px;
@@ -668,90 +694,107 @@ body {
 }
 
 .market-chart-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: var(--bg);
     border-radius: var(--radius-sm);
     padding: 1rem;
     min-height: 280px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.market-chart {
+.market-chart-container canvas {
     max-width: 100%;
-    width: 100%;
 }
 
-/* ===== 재무 카드 ===== */
+/* ===== FINANCE CARD ===== */
+.finance-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
 .finance-stats {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.finance-item {
+.stat-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 13px;
-    padding-bottom: 1rem;
+    padding: 0.75rem 0;
     border-bottom: 1px solid var(--border);
 }
 
-.finance-item:last-of-type:not(.total) {
-    border-bottom: 1px solid var(--border);
+.stat-item:last-child {
+    border-bottom: none;
 }
 
-.finance-item.total {
+.stat-item.total {
     border-top: 2px solid var(--border);
     border-bottom: none;
     padding-top: 1rem;
     font-weight: 600;
+    margin-top: 0.5rem;
 }
 
-.finance-item .label {
+.stat-label {
     color: var(--muted);
 }
 
-.finance-item .amount {
-    font-family: 'Courier New', monospace;
-    font-weight: 500;
+.stat-value {
+    font-family: 'DM Mono', monospace;
     color: var(--text);
+    font-weight: 500;
 }
 
-.amount.income {
+.stat-value.income {
     color: var(--green);
 }
 
-.amount.expense {
+.stat-value.expense {
     color: var(--red);
 }
 
 .finance-chart-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: var(--bg);
     border-radius: var(--radius-sm);
     padding: 1rem;
     min-height: 280px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 1.5rem;
 }
 
-.finance-chart {
+.finance-chart-container canvas {
     max-width: 100%;
-    width: 100%;
 }
 
-/* ===== 반응형 ===== */
-@media (max-width: 1024px) {
-    .schedule-content {
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+    .main {
+        padding: 1.5rem;
+    }
+
+    .market-layout,
+    .finance-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .schedule-grid {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
     .header {
+        padding: 1rem 1.5rem;
+    }
+
+    .header-content {
         flex-direction: column;
         gap: 1rem;
         align-items: flex-start;
@@ -762,42 +805,71 @@ body {
         justify-content: space-between;
     }
 
+    .main {
+        padding: 1rem;
+    }
+
     .grid-3 {
         grid-template-columns: 1fr;
     }
 
-    .schedule-content {
+    .market-layout,
+    .finance-layout,
+    .schedule-grid {
         grid-template-columns: 1fr;
     }
 
-    .mini-calendar {
-        order: 2;
-    }
-
-    .schedule-events {
-        order: 1;
+    .card {
+        border-radius: 10px;
     }
 }
 
 @media (max-width: 480px) {
-    body {
+    .header {
         padding: 1rem;
     }
 
-    .header {
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .header-left h1 {
+    .logo {
         font-size: 18px;
     }
 
+    .theme-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .time {
+        font-size: 16px;
+    }
+
+    .date {
+        font-size: 11px;
+    }
+
+    .main {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+
     .card {
+        border-radius: 8px;
+    }
+
+    .card-header,
+    .card-content {
         padding: 1rem;
     }
 
-    .card-label {
-        font-size: 10px;
+    .weather-icon {
+        font-size: 40px;
+    }
+
+    .temp {
+        font-size: 36px;
+    }
+
+    .grid,
+    .grid-3 {
+        gap: 0.75rem;
     }
 }
