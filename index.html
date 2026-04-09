@@ -30,37 +30,39 @@
             </div>
         </header>
 
-        <!-- Tab System -->
-        <div id="tabSystem" class="tab-system" style="display: none;">
-            <div class="tab-bar">
-                <div class="tab-buttons">
-                    <button class="tab-btn" data-tab="todo">📝 할 일</button>
-                    <button class="tab-btn" data-tab="memo">📌 메모</button>
-                    <button class="tab-btn" data-tab="schedule">📅 일정</button>
-                </div>
+        <!-- Todo Tab -->
+        <div id="todoTab" class="tab-panel" style="display: none;">
+            <div class="tab-header">
+                <h2>📝 오늘의 할 일</h2>
                 <button class="tab-close-btn">✕</button>
             </div>
-
-            <!-- Todo Tab -->
-            <div class="tab-content" id="todoTabContent">
-                <div class="tab-inner">
+            <div class="tab-body">
+                <div class="tab-content" style="display: grid; grid-template-columns: 350px 1fr; gap: 2rem;">
                     <div class="tab-calendar" id="todoCalendar"></div>
-                    <div class="tab-history" id="todoHistory"></div>
+                    <div class="tab-section" id="todoPanel"></div>
                 </div>
             </div>
+        </div>
 
-            <!-- Memo Tab -->
-            <div class="tab-content" id="memoTabContent" style="display: none;">
-                <div class="tab-inner">
-                    <div class="tab-history" id="memoHistory"></div>
-                </div>
+        <!-- Memo Tab -->
+        <div id="memoTab" class="tab-panel" style="display: none;">
+            <div class="tab-header">
+                <h2>📌 메모</h2>
+                <button class="tab-close-btn">✕</button>
             </div>
+            <div class="tab-body">
+                <div class="tab-content" id="memoPanel"></div>
+            </div>
+        </div>
 
-            <!-- Schedule Tab -->
-            <div class="tab-content" id="scheduleTabContent" style="display: none;">
-                <div class="tab-inner">
-                    <div class="schedule-manager" id="scheduleManager"></div>
-                </div>
+        <!-- Schedule Tab -->
+        <div id="scheduleTab" class="tab-panel" style="display: none;">
+            <div class="tab-header">
+                <h2>📅 일정 관리</h2>
+                <button class="tab-close-btn">✕</button>
+            </div>
+            <div class="tab-body">
+                <div class="tab-content" id="schedulePanel"></div>
             </div>
         </div>
 
