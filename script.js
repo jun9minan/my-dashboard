@@ -745,6 +745,215 @@ document.querySelectorAll('.modal-close').forEach(btn => {
     });
 });
 
+// ===== TAB SYSTEM =====
+const tabSystem = document.getElementById('tabSystem');
+const tabButtons = document.querySelectorAll('.tab-btn');
+const tabCloseBtn = document.querySelector('.tab-close-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+
+function openTab(tabName) {
+    tabSystem.style.display = 'flex';
+
+    tabButtons.forEach(btn => {
+        if (btn.getAttribute('data-tab') === tabName) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    tabContents.forEach(content => {
+        if (content.id === tabName + 'TabContent') {
+            content.style.display = 'block';
+        } else {
+            content.style.display = 'none';
+        }
+    });
+
+    if (tabName === 'todo') {
+        renderTodoTab();
+    } else if (tabName === 'memo') {
+        renderMemoTab();
+    } else if (tabName === 'schedule') {
+        renderScheduleTab();
+    }
+}
+
+function closeTab() {
+    tabSystem.style.display = 'none';
+}
+
+function renderTodoTab() {
+    const todoHistory = document.getElementById('todoHistory');
+    todoHistory.innerHTML = '';
+
+    // Group todos by date
+    const todosByDate = {};
+    document.querySelectorAll('.todo-item').forEach(item => {
+        const id = item.getAttribute('data-id');
+        const text = item.querySelector('.todo-text').textContent;
+        const completed = item.classList.contains('completed');
+        const historyData = window.todoHistory?.[id];
+
+        if (historyData && historyData.entries) {
+            historyData.entries.forEach(entry => {
+                if (!todosByDate[entry.time.split(' ')[0]]) {
+                    todosByDate[entry.time.split(' ')[0]] = [];
+                }
+                todosByDate[entry.time.split(' ')[0]].push({
+                    time: entry.time,
+                    title: historyData.title,
+                    completed: entry.completed
+                });
+            });
+        }
+    });
+
+    // Display todos by date
+    Object.keys(todosByDate).sort().reverse().forEach(date => {
+        const dateEl = document.createElement('div');
+        dateEl.innerHTML = `<div class="history-date">${date}</div>`;
+        todosByDate[date].forEach(todo => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'history-item';
+            itemEl.innerHTML = `
+                <div class="history-date">${todo.time}</div>
+                <div class="history-content">${todo.title} ${todo.completed ? '✓' : ''}</div>
+            `;
+            dateEl.appendChild(itemEl);
+        });
+        todoHistory.appendChild(dateEl);
+    });
+}
+
+function renderMemoTab() {
+    const memoHistory = document.getElementById('memoHistory');
+    memoHistory.innerHTML = '';
+
+    const memosByDate = {};
+    document.querySelectorAll('.memo-item').forEach(item => {
+        const id = item.getAttribute('data-id');
+        const historyData = window.memoHistory?.[id];
+
+        if (historyData && historyData.entries) {
+            historyData.entries.forEach(entry => {
+                if (!memosByDate[entry.time.split(' ')[0]]) {
+                    memosByDate[entry.time.split(' ')[0]] = [];
+                }
+                memosByDate[entry.time.split(' ')[0]].push({
+                    time: entry.time,
+                    title: historyData.title,
+                    content: entry.content
+                });
+            });
+        }
+    });
+
+    Object.keys(memosByDate).sort().reverse().forEach(date => {
+        const dateEl = document.createElement('div');
+        dateEl.innerHTML = `<div class="history-date">${date}</div>`;
+        memosByDate[date].forEach(memo => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'history-item';
+            itemEl.innerHTML = `
+                <div class="history-date">${memo.time}</div>
+                <div class="history-content"><strong>${memo.title}</strong><br>${memo.content.substring(0, 100)}...</div>
+            `;
+            dateEl.appendChild(itemEl);
+        });
+        memoHistory.appendChild(dateEl);
+    });
+}
+
+function renderScheduleTab() {
+    const scheduleManager = document.getElementById('scheduleManager');
+    scheduleManager.innerHTML = `
+        <div class="schedule-form">
+            <input type="text" id="scheduleTitle" placeholder="일정 제목">
+            <input type="time" id="scheduleTime" placeholder="시간">
+            <textarea id="scheduleDesc" placeholder="설명" style="resize: vertical; min-height: 80px;"></textarea>
+            <button onclick="addScheduleItem()">일정 추가</button>
+        </div>
+        <div class="schedule-list" id="scheduleList"></div>
+    `;
+
+    // Load existing schedules
+    const scheduleList = document.getElementById('scheduleList');
+    const allSchedules = [
+        { time: '10:30', title: '팀 회의 - 프로젝트 진행상황' },
+        { time: '14:00', title: '클라이언트 미팅' },
+        { time: '18:30', title: '운동 (피트니스)' }
+    ];
+
+    allSchedules.forEach((schedule, idx) => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'schedule-item';
+        itemEl.innerHTML = `
+            <div class="schedule-item-content">
+                <div class="schedule-item-time">${schedule.time}</div>
+                <div class="schedule-item-title">${schedule.title}</div>
+            </div>
+            <div class="schedule-item-actions">
+                <button onclick="editSchedule(${idx})">수정</button>
+                <button onclick="deleteSchedule(${idx})">삭제</button>
+            </div>
+        `;
+        scheduleList.appendChild(itemEl);
+    });
+}
+
+function addScheduleItem() {
+    const title = document.getElementById('scheduleTitle').value;
+    const time = document.getElementById('scheduleTime').value;
+
+    if (!title || !time) {
+        alert('제목과 시간을 입력하세요');
+        return;
+    }
+
+    alert('일정이 추가되었습니다');
+    document.getElementById('scheduleTitle').value = '';
+    document.getElementById('scheduleTime').value = '';
+    renderScheduleTab();
+}
+
+function editSchedule(idx) {
+    alert('일정 수정 기능');
+}
+
+function deleteSchedule(idx) {
+    alert('일정이 삭제되었습니다');
+    renderScheduleTab();
+}
+
+// Tab event listeners
+tabButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+        openTab(this.getAttribute('data-tab'));
+    });
+});
+
+tabCloseBtn.addEventListener('click', closeTab);
+
+// Open tabs from cards
+document.querySelector('.todo-card')?.addEventListener('click', function(e) {
+    if (!e.target.closest('.todo-check') && !e.target.closest('.todo-delete')) {
+        openTab('todo');
+    }
+});
+
+document.querySelector('.memo-card')?.addEventListener('click', function(e) {
+    if (!e.target.closest('.memo-item')) {
+        openTab('memo');
+    }
+});
+
+document.querySelector('.schedule-card')?.addEventListener('click', function(e) {
+    if (e.target.closest('.schedule-card .card-header')) {
+        openTab('schedule');
+    }
+});
+
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', function() {
     loadTheme();
