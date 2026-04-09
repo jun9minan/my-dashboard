@@ -40,7 +40,91 @@ function updateDateTime() {
 updateDateTime();
 setInterval(updateDateTime, 60000);
 
-// ===== CALENDAR =====
+// ===== CALENDAR & SCHEDULE DATA =====
+let currentYear = 2026;
+let currentMonth = 4;
+let selectedDate = 9; // Today
+
+// Events by date: YYYY-MM-DD
+const eventsByDate = {
+    '2026-04-07': [
+        { time: '09:00', title: '주간 회의' },
+        { time: '14:00', title: '클라이언트 검토' },
+        { time: '16:30', title: '프로젝트 리뷰' }
+    ],
+    '2026-04-08': [
+        { time: '10:30', title: '디자인 미팅' },
+        { time: '15:00', title: '개발 회의' }
+    ],
+    '2026-04-09': [
+        { time: '10:30', title: '팀 회의 - 프로젝트 진행상황' },
+        { time: '14:00', title: '클라이언트 미팅' },
+        { time: '18:30', title: '운동 (피트니스)' }
+    ],
+    '2026-04-10': [
+        { time: '09:00', title: '마케팅 전략 회의' },
+        { time: '13:00', title: '제품 론칭 준비' }
+    ],
+    '2026-04-11': [
+        { time: '10:00', title: '팀 스탠드업' },
+        { time: '15:30', title: '공급자 미팅' },
+        { time: '17:00', title: '주간 정리' }
+    ],
+    '2026-04-12': [
+        { time: '11:00', title: '브레인스토밍 세션' },
+        { time: '14:00', title: '데이터 분석 발표' }
+    ],
+    '2026-04-13': [
+        { time: '10:00', title: '주말 계획 회의' },
+        { time: '16:00', title: '휴식' }
+    ]
+};
+
+function getDateKey(year, month, day) {
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+function hasEvents(year, month, day) {
+    const dateKey = getDateKey(year, month, day);
+    return eventsByDate[dateKey] && eventsByDate[dateKey].length > 0;
+}
+
+function getEventsForDate(year, month, day) {
+    const dateKey = getDateKey(year, month, day);
+    return eventsByDate[dateKey] || [];
+}
+
+function displayScheduleForDate(year, month, day) {
+    const dateKey = getDateKey(year, month, day);
+    const events = eventsByDate[dateKey] || [];
+    const dateDisplay = document.querySelector('.schedule-events .events-section:first-child h3');
+    const eventList = document.querySelector('.schedule-events .events-section:first-child .event-list');
+
+    const dateStr = `${year}년 ${month}월 ${day}일`;
+    const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][new Date(year, month - 1, day).getDay()];
+
+    if (dateDisplay) {
+        dateDisplay.textContent = `📍 ${dateStr} (${dayOfWeek})`;
+    }
+
+    if (eventList) {
+        eventList.innerHTML = '';
+        if (events.length === 0) {
+            eventList.innerHTML = '<div style="color: var(--text-muted); padding: 1rem; text-align: center;">일정 없음</div>';
+        } else {
+            events.forEach(event => {
+                const eventItem = document.createElement('div');
+                eventItem.className = 'event-item';
+                eventItem.innerHTML = `
+                    <span class="event-time">${event.time}</span>
+                    <span class="event-title">${event.title}</span>
+                `;
+                eventList.appendChild(eventItem);
+            });
+        }
+    }
+}
+
 function generateCalendar(year = 2026, month = 4) {
     const firstDay = new Date(year, month - 1, 1);
     const lastDay = new Date(year, month, 0);
@@ -48,7 +132,12 @@ function generateCalendar(year = 2026, month = 4) {
     const startingDayOfWeek = firstDay.getDay();
 
     const calendarDays = document.getElementById('calendarDays');
+    const calendarTitle = document.getElementById('calendarTitle');
     calendarDays.innerHTML = '';
+
+    if (calendarTitle) {
+        calendarTitle.textContent = `${year}년 ${month}월`;
+    }
 
     for (let i = 0; i < startingDayOfWeek; i++) {
         const emptyCell = document.createElement('div');
@@ -59,13 +148,112 @@ function generateCalendar(year = 2026, month = 4) {
     for (let i = 1; i <= daysInMonth; i++) {
         const dayCell = document.createElement('div');
         dayCell.className = 'calendar-day';
-        dayCell.textContent = i;
-        if (i === 9) dayCell.classList.add('today');
+
+        const dayContent = document.createElement('div');
+        dayContent.style.display = 'flex';
+        dayContent.style.flexDirection = 'column';
+        dayContent.style.alignItems = 'center';
+        dayContent.style.gap = '2px';
+
+        const dayNumber = document.createElement('span');
+        dayNumber.textContent = i;
+        dayContent.appendChild(dayNumber);
+
+        // Add event indicator if events exist
+        if (hasEvents(year, month, i)) {
+            const indicator = document.createElement('span');
+            indicator.style.fontSize = '8px';
+            indicator.style.color = 'var(--accent)';
+            indicator.textContent = '●';
+            dayContent.appendChild(indicator);
+        }
+
+        dayCell.appendChild(dayContent);
+
+        if (i === 9) {
+            dayCell.classList.add('today');
+        }
+
+        // Add click handler
+        dayCell.style.cursor = 'pointer';
+        dayCell.addEventListener('click', function() {
+            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('today'));
+            dayCell.classList.add('today');
+            selectedDate = i;
+            displayScheduleForDate(year, month, i);
+            updateWeekSummary(year, month, i);
+        });
+
         calendarDays.appendChild(dayCell);
     }
 }
 
+function updateWeekSummary(year, month, selectedDay) {
+    const today = new Date(year, month - 1, selectedDay);
+    const dayOfWeek = today.getDay();
+    const firstDayOfWeek = new Date(today);
+    firstDayOfWeek.setDate(today.getDate() - dayOfWeek);
+
+    const weekDays = document.querySelectorAll('.week-day');
+    weekDays.forEach((dayEl, idx) => {
+        const currentDate = new Date(firstDayOfWeek);
+        currentDate.setDate(firstDayOfWeek.getDate() + idx);
+
+        const dayNum = currentDate.getDate();
+        const hasEventsOnDay = hasEvents(currentDate.getFullYear(), currentDate.getMonth() + 1, dayNum);
+        const eventCount = getEventsForDate(currentDate.getFullYear(), currentDate.getMonth() + 1, dayNum).length;
+
+        const countSpan = dayEl.querySelector('.day-count');
+        if (countSpan) {
+            countSpan.textContent = hasEventsOnDay ? eventCount : '0';
+        }
+
+        // Highlight selected day
+        if (dayNum === selectedDay) {
+            dayEl.classList.add('today');
+        } else {
+            dayEl.classList.remove('today');
+        }
+
+        // Add click handler
+        dayEl.style.cursor = 'pointer';
+        dayEl.addEventListener('click', function() {
+            const clickedDate = new Date(firstDayOfWeek);
+            clickedDate.setDate(firstDayOfWeek.getDate() + idx);
+            const clickedDay = clickedDate.getDate();
+            generateCalendar(clickedDate.getFullYear(), clickedDate.getMonth() + 1);
+            displayScheduleForDate(clickedDate.getFullYear(), clickedDate.getMonth() + 1, clickedDay);
+            updateWeekSummary(clickedDate.getFullYear(), clickedDate.getMonth() + 1, clickedDay);
+        });
+    });
+}
+
 generateCalendar();
+displayScheduleForDate(currentYear, currentMonth, selectedDate);
+updateWeekSummary(currentYear, currentMonth, selectedDate);
+
+// Calendar navigation
+document.querySelector('.calendar-prev')?.addEventListener('click', function() {
+    currentMonth--;
+    if (currentMonth < 1) {
+        currentMonth = 12;
+        currentYear--;
+    }
+    generateCalendar(currentYear, currentMonth);
+    displayScheduleForDate(currentYear, currentMonth, 1);
+    updateWeekSummary(currentYear, currentMonth, 1);
+});
+
+document.querySelector('.calendar-next')?.addEventListener('click', function() {
+    currentMonth++;
+    if (currentMonth > 12) {
+        currentMonth = 1;
+        currentYear++;
+    }
+    generateCalendar(currentYear, currentMonth);
+    displayScheduleForDate(currentYear, currentMonth, 1);
+    updateWeekSummary(currentYear, currentMonth, 1);
+});
 
 // ===== TODO MANAGEMENT =====
 const todoInput = document.getElementById('todoInput');
@@ -255,8 +443,17 @@ function initMarketChart(marketKey = 'sp500') {
 
     const data = marketData[marketKey];
     const colors = getChartColors();
+    const prices = data.prices;
 
     if (marketChart) marketChart.destroy();
+
+    // Find indices of min, max, and closing price
+    let minIdx = 0, maxIdx = 0;
+    for (let i = 0; i < prices.length; i++) {
+        if (prices[i] < prices[minIdx]) minIdx = i;
+        if (prices[i] > prices[maxIdx]) maxIdx = i;
+    }
+    const closingIdx = prices.length - 1;
 
     marketChart = new Chart(ctx, {
         type: 'line',
@@ -275,7 +472,22 @@ function initMarketChart(marketKey = 'sp500') {
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2.5,
                 pointHoverRadius: 7,
-                pointHoverBorderWidth: 3
+                pointHoverBorderWidth: 3,
+                datalabels: {
+                    display: true,
+                    anchor: 'end',
+                    align: 'top',
+                    offset: 8,
+                    color: data.color,
+                    font: { size: 11, weight: '600', family: "'DM Mono', monospace" },
+                    formatter: function(value, context) {
+                        const idx = context.dataIndex;
+                        if (idx === minIdx || idx === maxIdx || idx === closingIdx) {
+                            return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                        }
+                        return '';
+                    }
+                }
             }]
         },
         options: {
@@ -288,15 +500,7 @@ function initMarketChart(marketKey = 'sp500') {
             plugins: {
                 legend: { display: false },
                 datalabels: {
-                    display: true,
-                    anchor: 'end',
-                    align: 'top',
-                    offset: 8,
-                    color: data.color,
-                    font: { size: 11, weight: '600', family: "'DM Mono', monospace" },
-                    formatter: function(value) {
-                        return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                    }
+                    display: false
                 },
                 tooltip: {
                     backgroundColor: colors.tooltip,
@@ -372,7 +576,18 @@ function initFinanceChart() {
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2.5,
                 pointHoverRadius: 7,
-                pointHoverBorderWidth: 3
+                pointHoverBorderWidth: 3,
+                datalabels: {
+                    display: true,
+                    anchor: 'end',
+                    align: 'top',
+                    offset: 6,
+                    color: '#2d5be3',
+                    font: { size: 10, weight: '600', family: "'DM Mono', monospace" },
+                    formatter: function(value) {
+                        return '₩' + (value / 1000000).toFixed(0) + 'M';
+                    }
+                }
             }]
         },
         options: {
@@ -393,6 +608,9 @@ function initFinanceChart() {
                         boxWidth: 8,
                         boxHeight: 8
                     }
+                },
+                datalabels: {
+                    display: false
                 },
                 tooltip: {
                     backgroundColor: colors.tooltip,

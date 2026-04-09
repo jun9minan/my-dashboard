@@ -49,7 +49,7 @@ body {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
     color: var(--text);
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.6;
     transition: background var(--transition), color var(--transition);
 }
@@ -153,10 +153,10 @@ body.dark-mode .header {
     max-width: 1400px;
     width: 100%;
     margin: 0 auto;
-    padding: 2.5rem 2rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.2rem;
 }
 
 /* ===== GRID ===== */
@@ -185,13 +185,13 @@ body.dark-mode .header {
 }
 
 .card-header {
-    padding: 1.5rem;
+    padding: 1.2rem;
     border-bottom: 1px solid var(--border);
     background: linear-gradient(135deg, rgba(45, 91, 227, 0.02), rgba(45, 91, 227, 0.01));
 }
 
 .card-header h2 {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -199,14 +199,14 @@ body.dark-mode .header {
 }
 
 .card-content {
-    padding: 1.5rem;
+    padding: 1.2rem;
 }
 
 /* ===== WEATHER CARD ===== */
 .weather-display {
     display: flex;
-    gap: 1.25rem;
-    margin-bottom: 1.25rem;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 .weather-icon {
@@ -244,10 +244,10 @@ body.dark-mode .header {
 
 .weather-details {
     border-top: 1px solid var(--border);
-    padding-top: 1.25rem;
+    padding-top: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.6rem;
 }
 
 .weather-row {
@@ -348,7 +348,7 @@ body.dark-mode .header {
 
 .todo-text {
     flex: 1;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--text);
     font-weight: 500;
 }
@@ -517,7 +517,7 @@ body.dark-mode .header {
 }
 
 .memo-item-text {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-secondary);
     overflow: hidden;
     text-overflow: ellipsis;
