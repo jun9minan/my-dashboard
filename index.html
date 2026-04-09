@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>통합 대시보드 - 다이어리 & 가계부</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -13,14 +14,16 @@
         <header class="header">
             <div class="header-left">
                 <h1>Dashboard</h1>
-                <button class="theme-toggle" id="themeToggle" title="다크/라이트 모드 전환">
-                    <span class="theme-icon">🌙</span>
-                </button>
+                <p>통합 관리 대시보드</p>
             </div>
             <div class="header-right">
                 <div class="datetime" id="datetime">
-                    2026년 4월 9일 (수) 오전 7:27
+                    <span id="timeDisplay">07:38</span>
+                    <span id="dateDisplay">2026년 4월 9일</span>
                 </div>
+                <button class="theme-toggle" id="themeToggle" title="다크/라이트 모드 전환">
+                    <span class="theme-icon">🌙</span>
+                </button>
             </div>
         </header>
 
@@ -30,167 +33,148 @@
             <div class="grid grid-3">
                 <!-- 날씨 -->
                 <div class="card weather-card">
-                    <div class="card-header">
-                        <h2>날씨</h2>
+                    <div class="card-label">
+                        <span>날씨</span>
                     </div>
                     <div class="card-body">
                         <div class="weather-main">
                             <div class="weather-icon">☀️</div>
-                            <div class="weather-current">
-                                <p class="temperature">25°C</p>
-                                <p class="location">서울</p>
+                            <div class="weather-info">
+                                <div class="weather-temp">25<span class="unit">°C</span></div>
+                                <div class="weather-location">서울</div>
                             </div>
                         </div>
                         <div class="weather-details">
-                            <div class="weather-info">
+                            <div class="weather-row">
                                 <span>최고</span>
-                                <span class="value">28°C</span>
+                                <span>28°C</span>
                             </div>
-                            <div class="weather-info">
+                            <div class="weather-row">
                                 <span>최저</span>
-                                <span class="value">18°C</span>
+                                <span>18°C</span>
                             </div>
-                            <div class="weather-recommendation">
-                                가디건 착용 필요
+                            <div class="weather-row">
+                                <span>습도</span>
+                                <span>65%</span>
                             </div>
+                            <div class="outfit-tag">가디건 착용 필요</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- 오늘의 할 일 -->
                 <div class="card todo-card">
-                    <div class="card-header">
-                        <h2>오늘의 할 일</h2>
+                    <div class="card-label">
+                        <span>오늘의 할 일</span>
                     </div>
                     <div class="card-body">
-                        <div class="todo-item completed">
-                            <input type="checkbox" checked>
-                            <span>아침 산책</span>
+                        <div class="todo-list" id="todoList">
+                            <div class="todo-item done">
+                                <div class="todo-check">
+                                    <span class="todo-check-mark">✓</span>
+                                </div>
+                                <span class="todo-text">아침 산책</span>
+                                <button class="todo-del">×</button>
+                            </div>
+                            <div class="todo-item">
+                                <div class="todo-check"></div>
+                                <span class="todo-text">프로젝트 계획 작성</span>
+                                <button class="todo-del">×</button>
+                            </div>
+                            <div class="todo-item">
+                                <div class="todo-check"></div>
+                                <span class="todo-text">회의 참석</span>
+                                <button class="todo-del">×</button>
+                            </div>
                         </div>
-                        <div class="todo-item">
-                            <input type="checkbox">
-                            <span>프로젝트 계획 작성</span>
-                        </div>
-                        <div class="todo-item">
-                            <input type="checkbox">
-                            <span>회의 참석</span>
+                        <div class="todo-input-row">
+                            <input type="text" class="todo-input" id="todoInput" placeholder="새 할 일 추가...">
+                            <button class="todo-add" id="todoAddBtn">추가</button>
                         </div>
                     </div>
-                    <button class="card-action">전체보기</button>
                 </div>
 
-                <!-- 최근 메모 -->
+                <!-- 메모 -->
                 <div class="card memo-card">
-                    <div class="card-header">
-                        <h2>최근 메모</h2>
+                    <div class="card-label">
+                        <span>메모</span>
                     </div>
                     <div class="card-body">
-                        <div class="memo-preview">
-                            <p class="memo-title">프로젝트 아이디어</p>
-                            <p class="memo-text">새로운 대시보드 프로젝트 시작...</p>
+                        <div class="memo-input-wrapper">
+                            <input type="text" class="memo-title-input" id="memoTitleInput" placeholder="메모 제목...">
+                            <textarea class="memo-textarea" id="memoTextarea" placeholder="메모 내용을 입력하세요..."></textarea>
+                            <button class="memo-save-btn" id="memoSaveBtn">저장</button>
+                        </div>
+                        <div class="memo-list" id="memoList">
+                            <div class="memo-item">
+                                <div class="memo-preview">
+                                    <p class="memo-title">프로젝트 아이디어</p>
+                                    <p class="memo-text">새로운 대시보드 프로젝트 시작...</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <button class="card-action">전체보기</button>
                 </div>
             </div>
 
             <!-- 2행: 일정 -->
             <div class="card schedule-card">
-                <div class="card-header">
-                    <h2>일정</h2>
+                <div class="card-label">
+                    <span>일정</span>
                 </div>
-                <div class="card-body schedule-body">
-                    <!-- 좌측: 월간 달력 -->
-                    <div class="schedule-calendar">
-                        <div class="calendar-header">
-                            <span>◀</span>
-                            <span>2026년 4월</span>
-                            <span>▶</span>
-                        </div>
-                        <div class="calendar-grid">
-                            <div class="calendar-day header">일</div>
-                            <div class="calendar-day header">월</div>
-                            <div class="calendar-day header">화</div>
-                            <div class="calendar-day header">수</div>
-                            <div class="calendar-day header">목</div>
-                            <div class="calendar-day header">금</div>
-                            <div class="calendar-day header">토</div>
-
-                            <div class="calendar-day empty"></div>
-                            <div class="calendar-day empty"></div>
-                            <div class="calendar-day">1</div>
-                            <div class="calendar-day">2</div>
-                            <div class="calendar-day">3</div>
-                            <div class="calendar-day">4</div>
-                            <div class="calendar-day">5</div>
-
-                            <div class="calendar-day">6</div>
-                            <div class="calendar-day">7</div>
-                            <div class="calendar-day">8</div>
-                            <div class="calendar-day today">9</div>
-                            <div class="calendar-day">10</div>
-                            <div class="calendar-day">11</div>
-                            <div class="calendar-day">12</div>
-
-                            <div class="calendar-day">13</div>
-                            <div class="calendar-day">14</div>
-                            <div class="calendar-day">15</div>
-                            <div class="calendar-day">16</div>
-                            <div class="calendar-day">17</div>
-                            <div class="calendar-day">18</div>
-                            <div class="calendar-day">19</div>
-
-                            <div class="calendar-day">20</div>
-                            <div class="calendar-day">21</div>
-                            <div class="calendar-day">22</div>
-                            <div class="calendar-day">23</div>
-                            <div class="calendar-day">24</div>
-                            <div class="calendar-day">25</div>
-                            <div class="calendar-day">26</div>
-
-                            <div class="calendar-day">27</div>
-                            <div class="calendar-day">28</div>
-                            <div class="calendar-day">29</div>
-                            <div class="calendar-day">30</div>
-                        </div>
-                    </div>
-
-                    <!-- 우측: 일정 -->
-                    <div class="schedule-events">
-                        <div class="schedule-section">
-                            <h3>오늘의 일정</h3>
-                            <div class="event-item">
-                                <span class="event-time">14:00</span>
-                                <span class="event-title">팀 미팅</span>
+                <div class="card-body">
+                    <div class="schedule-content">
+                        <!-- 달력 -->
+                        <div class="mini-calendar">
+                            <div class="calendar-header">
+                                <button class="calendar-nav">◀</button>
+                                <span id="calendarMonth">2026년 4월</span>
+                                <button class="calendar-nav">▶</button>
                             </div>
-                            <div class="event-item">
-                                <span class="event-time">18:00</span>
-                                <span class="event-title">운동</span>
+                            <div class="calendar-grid" id="calendarGrid">
+                                <!-- JavaScript로 생성 -->
                             </div>
                         </div>
 
-                        <div class="schedule-section">
-                            <h3>이번주 일정</h3>
-                            <div class="week-events">
-                                <div class="week-day">
-                                    <span class="day-label">월</span>
-                                    <span class="day-events">회의</span>
+                        <!-- 이벤트 -->
+                        <div class="schedule-events">
+                            <div class="schedule-section">
+                                <h4>오늘의 일정</h4>
+                                <div class="event-list">
+                                    <div class="event-item">
+                                        <span class="event-time">14:00</span>
+                                        <span class="event-title">팀 미팅</span>
+                                    </div>
+                                    <div class="event-item">
+                                        <span class="event-time">18:00</span>
+                                        <span class="event-title">운동</span>
+                                    </div>
                                 </div>
-                                <div class="week-day">
-                                    <span class="day-label">화</span>
-                                    <span class="day-events">프로젝트</span>
-                                </div>
-                                <div class="week-day today-week">
-                                    <span class="day-label">수</span>
-                                    <span class="day-events">미팅</span>
-                                </div>
-                                <div class="week-day">
-                                    <span class="day-label">목</span>
-                                    <span class="day-events">운동</span>
-                                </div>
-                                <div class="week-day">
-                                    <span class="day-label">금</span>
-                                    <span class="day-events">미팅</span>
+                            </div>
+
+                            <div class="schedule-section">
+                                <h4>이번주 일정</h4>
+                                <div class="week-summary">
+                                    <div class="week-day">
+                                        <span class="day-label">월</span>
+                                        <span class="day-count">2</span>
+                                    </div>
+                                    <div class="week-day">
+                                        <span class="day-label">화</span>
+                                        <span class="day-count">1</span>
+                                    </div>
+                                    <div class="week-day today">
+                                        <span class="day-label">수</span>
+                                        <span class="day-count">2</span>
+                                    </div>
+                                    <div class="week-day">
+                                        <span class="day-label">목</span>
+                                        <span class="day-count">1</span>
+                                    </div>
+                                    <div class="week-day">
+                                        <span class="day-label">금</span>
+                                        <span class="day-count">3</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -200,55 +184,52 @@
 
             <!-- 3행: 미국 증시 -->
             <div class="card market-card">
-                <div class="card-header">
-                    <h2>미국 증시</h2>
+                <div class="card-label">
+                    <span>미국 증시</span>
                 </div>
-                <div class="card-body market-body">
-                    <!-- 좌측: 증시 리스트 -->
-                    <div class="market-list">
+                <div class="card-body">
+                    <div class="market-list" id="marketList">
                         <div class="market-item active" data-market="sp500">
-                            <div class="market-info">
-                                <span class="market-name">S&P 500</span>
-                                <div class="market-values">
-                                    <span class="price">5,000.00</span>
-                                    <span class="change positive">+50.00 (+1.00%)</span>
+                            <div class="market-header">
+                                <div class="market-name">S&P 500</div>
+                                <div class="market-right">
+                                    <div class="market-price">$5,000.00</div>
+                                    <div class="market-change up">+$50.00 (+1.00%)</div>
                                 </div>
                             </div>
                         </div>
                         <div class="market-item" data-market="nasdaq">
-                            <div class="market-info">
-                                <span class="market-name">나스닥</span>
-                                <div class="market-values">
-                                    <span class="price">15,000.00</span>
-                                    <span class="change positive">+200.00 (+1.35%)</span>
+                            <div class="market-header">
+                                <div class="market-name">나스닥</div>
+                                <div class="market-right">
+                                    <div class="market-price">$15,000.00</div>
+                                    <div class="market-change up">+$200.00 (+1.35%)</div>
                                 </div>
                             </div>
                         </div>
                         <div class="market-item" data-market="dow">
-                            <div class="market-info">
-                                <span class="market-name">다우존스</span>
-                                <div class="market-values">
-                                    <span class="price">40,000.00</span>
-                                    <span class="change negative">-50.00 (-0.12%)</span>
+                            <div class="market-header">
+                                <div class="market-name">다우존스</div>
+                                <div class="market-right">
+                                    <div class="market-price">$40,000.00</div>
+                                    <div class="market-change down">-$50.00 (-0.12%)</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 우측: 그래프 -->
-                    <div class="market-chart">
-                        <canvas id="marketChart"></canvas>
+                    <div class="market-chart-container">
+                        <canvas id="marketChart" class="market-chart"></canvas>
                     </div>
                 </div>
             </div>
 
             <!-- 4행: 재무현황 -->
             <div class="card finance-card">
-                <div class="card-header">
-                    <h2>재무 현황</h2>
+                <div class="card-label">
+                    <span>재무 현황</span>
                 </div>
-                <div class="card-body finance-body">
-                    <!-- 좌측: 재무 지표 -->
+                <div class="card-body">
                     <div class="finance-stats">
                         <div class="finance-item">
                             <span class="label">총자산</span>
@@ -256,11 +237,11 @@
                         </div>
                         <div class="finance-item">
                             <span class="label">이번 달 수입</span>
-                            <span class="amount positive">4,500,000원</span>
+                            <span class="amount income">4,500,000원</span>
                         </div>
                         <div class="finance-item">
                             <span class="label">이번 달 지출</span>
-                            <span class="amount negative">1,250,000원</span>
+                            <span class="amount expense">1,250,000원</span>
                         </div>
                         <div class="finance-item total">
                             <span class="label">순 저축</span>
@@ -268,9 +249,8 @@
                         </div>
                     </div>
 
-                    <!-- 우측: 시계열 그래프 -->
-                    <div class="finance-chart">
-                        <canvas id="financeChart"></canvas>
+                    <div class="finance-chart-container">
+                        <canvas id="financeChart" class="finance-chart"></canvas>
                     </div>
                 </div>
             </div>
