@@ -47,19 +47,17 @@ function generateCalendar(year = 2026, month = 4) {
     const calendarDays = document.getElementById('calendarDays');
     calendarDays.innerHTML = '';
 
-    // Empty cells before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'calendar-day empty';
         calendarDays.appendChild(emptyCell);
     }
 
-    // Days of month
     for (let i = 1; i <= daysInMonth; i++) {
         const dayCell = document.createElement('div');
         dayCell.className = 'calendar-day';
         dayCell.textContent = i;
-        if (i === 9) dayCell.classList.add('today'); // Today is April 9
+        if (i === 9) dayCell.classList.add('today');
         calendarDays.appendChild(dayCell);
     }
 }
@@ -96,11 +94,11 @@ function addTodo() {
         item.remove();
     });
 
-    todoList.appendChild(item);
+    todoList.insertBefore(item, todoList.firstChild);
     todoInput.value = '';
+    todoInput.focus();
 }
 
-// Attach handlers to existing todos
 document.querySelectorAll('.todo-item .todo-check').forEach(check => {
     check.addEventListener('change', function() {
         this.closest('.todo-item').classList.toggle('completed');
@@ -120,6 +118,9 @@ const memoSaveBtn = document.getElementById('memoSaveBtn');
 const memoList = document.getElementById('memoList');
 
 memoSaveBtn.addEventListener('click', saveMemo);
+memoTextInput.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'Enter') saveMemo();
+});
 
 function saveMemo() {
     const title = memoTitleInput.value.trim();
@@ -133,13 +134,14 @@ function saveMemo() {
     const item = document.createElement('div');
     item.className = 'memo-item';
     item.innerHTML = `
-        <div class="memo-item-title">${escapeHtml(title)}</div>
+        <div class="memo-item-title">📝 ${escapeHtml(title)}</div>
         <div class="memo-item-text">${escapeHtml(text)}</div>
     `;
 
     memoList.insertBefore(item, memoList.firstChild);
     memoTitleInput.value = '';
     memoTextInput.value = '';
+    memoTitleInput.focus();
 }
 
 function escapeHtml(text) {
@@ -152,27 +154,27 @@ function escapeHtml(text) {
 const marketData = {
     sp500: {
         name: 'S&P 500',
-        labels: ['1주', '2주', '3주', '4주'],
-        prices: [4950, 4900, 4980, 5000],
-        color: 'rgba(45, 91, 227, 0.8)'
+        labels: ['2주전', '1.5주전', '1주전', '5일전', '3일전', '어제', '오늘'],
+        prices: [5180, 5250, 5300, 5350, 5380, 5400, 5421],
+        color: '#2d5be3'
     },
     nasdaq: {
-        name: '나스닥',
-        labels: ['1주', '2주', '3주', '4주'],
-        prices: [14700, 14600, 14900, 15000],
-        color: 'rgba(26, 158, 92, 0.8)'
+        name: '나스닥 100',
+        labels: ['2주전', '1.5주전', '1주전', '5일전', '3일전', '어제', '오늘'],
+        prices: [18100, 18350, 18500, 18600, 18700, 18750, 18750.5],
+        color: '#16a34a'
     },
     dow: {
-        name: '다우존스',
-        labels: ['1주', '2주', '3주', '4주'],
-        prices: [40200, 40100, 40000, 39950],
-        color: 'rgba(217, 64, 64, 0.8)'
+        name: '다우존스 지수',
+        labels: ['2주전', '1.5주전', '1주전', '5일전', '3일전', '어제', '오늘'],
+        prices: [43800, 43600, 43400, 43200, 43150, 43401, 43125.75],
+        color: '#dc2626'
     }
 };
 
 const financeData = {
     labels: ['2024 Q1', '2024 Q2', '2024 Q3', '2024 Q4', '2025 Q1', '2025 Q2', '2025 Q3', '2025 Q4', '2026 Q1'],
-    values: [85000000, 87500000, 90000000, 92000000, 95000000, 96500000, 98000000, 99000000, 100000000]
+    values: [320000000, 335000000, 355000000, 380000000, 395000000, 405000000, 415000000, 420000000, 425000000]
 };
 
 let marketChart = null;
@@ -182,9 +184,9 @@ let financeChart = null;
 function getChartColors() {
     const isDark = document.body.classList.contains('dark-mode');
     return {
-        text: isDark ? '#f7f6f3' : '#1a1a18',
-        grid: isDark ? '#3a3934' : '#e8e6e0',
-        tooltip: 'rgba(0, 0, 0, 0.85)'
+        text: isDark ? '#fafaf8' : '#0f0f0d',
+        grid: isDark ? '#2a2926' : '#ede8e2',
+        tooltip: isDark ? 'rgba(31, 31, 29, 0.95)' : 'rgba(15, 15, 13, 0.95)'
     };
 }
 
@@ -203,18 +205,19 @@ function initMarketChart(marketKey = 'sp500') {
         data: {
             labels: data.labels,
             datasets: [{
-                label: data.name,
+                label: `${data.name} (주봉)`,
                 data: data.prices,
                 borderColor: data.color,
-                backgroundColor: data.color.replace('0.8', '0.1'),
+                backgroundColor: data.color + '10',
                 borderWidth: 3,
                 fill: true,
                 tension: 0.4,
-                pointRadius: 6,
+                pointRadius: 5,
                 pointBackgroundColor: data.color,
                 pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointHoverRadius: 7
+                pointBorderWidth: 2.5,
+                pointHoverRadius: 7,
+                pointHoverBorderWidth: 3
             }]
         },
         options: {
@@ -231,25 +234,31 @@ function initMarketChart(marketKey = 'sp500') {
                     titleColor: '#fff',
                     bodyColor: '#fff',
                     borderColor: data.color,
-                    borderWidth: 1,
-                    padding: 10,
+                    borderWidth: 2,
+                    padding: 12,
+                    titleFont: { size: 13, weight: 'bold' },
+                    bodyFont: { size: 12 },
                     displayColors: false,
                     callbacks: {
                         label: function(context) {
-                            return 'K$' + (context.parsed.y / 1000).toFixed(1);
+                            const value = context.parsed.y;
+                            return 'K$' + (value / 1000).toFixed(1);
                         }
                     }
                 }
             },
             scales: {
                 y: {
+                    beginAtZero: false,
                     grid: {
                         color: colors.grid,
-                        drawBorder: false
+                        drawBorder: false,
+                        drawTicks: false
                     },
                     ticks: {
                         color: colors.text,
-                        font: { size: 11, family: "'DM Mono', monospace" },
+                        font: { size: 12, family: "'DM Mono', monospace", weight: '500' },
+                        padding: 12,
                         callback: function(value) {
                             return 'K$' + (value / 1000).toFixed(0);
                         }
@@ -259,7 +268,8 @@ function initMarketChart(marketKey = 'sp500') {
                     grid: { display: false },
                     ticks: {
                         color: colors.text,
-                        font: { size: 11 }
+                        font: { size: 11 },
+                        padding: 8
                     }
                 }
             }
@@ -281,18 +291,19 @@ function initFinanceChart() {
         data: {
             labels: financeData.labels,
             datasets: [{
-                label: '총자산',
+                label: '총 자산',
                 data: financeData.values,
-                borderColor: 'rgba(45, 91, 227, 0.8)',
-                backgroundColor: 'rgba(45, 91, 227, 0.1)',
+                borderColor: '#2d5be3',
+                backgroundColor: '#2d5be310',
                 borderWidth: 3,
                 fill: true,
                 tension: 0.4,
                 pointRadius: 5,
-                pointBackgroundColor: 'rgba(45, 91, 227, 0.8)',
+                pointBackgroundColor: '#2d5be3',
                 pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointHoverRadius: 6
+                pointBorderWidth: 2.5,
+                pointHoverRadius: 7,
+                pointHoverBorderWidth: 3
             }]
         },
         options: {
@@ -307,38 +318,45 @@ function initFinanceChart() {
                     display: true,
                     labels: {
                         color: colors.text,
-                        font: { size: 12, weight: '500' },
+                        font: { size: 13, weight: '600' },
                         usePointStyle: true,
-                        padding: 15
+                        padding: 20,
+                        boxWidth: 8,
+                        boxHeight: 8
                     }
                 },
                 tooltip: {
                     backgroundColor: colors.tooltip,
                     titleColor: '#fff',
                     bodyColor: '#fff',
-                    borderColor: 'rgba(45, 91, 227, 0.8)',
-                    borderWidth: 1,
-                    padding: 10,
+                    borderColor: '#2d5be3',
+                    borderWidth: 2,
+                    padding: 12,
+                    titleFont: { size: 13, weight: 'bold' },
+                    bodyFont: { size: 12 },
                     displayColors: false,
                     callbacks: {
                         label: function(context) {
                             const value = context.parsed.y;
-                            return '₩' + (value / 1000000).toFixed(1) + 'M';
+                            return '₩' + (value / 1000000).toFixed(1) + '백만';
                         }
                     }
                 }
             },
             scales: {
                 y: {
+                    beginAtZero: false,
                     grid: {
                         color: colors.grid,
-                        drawBorder: false
+                        drawBorder: false,
+                        drawTicks: false
                     },
                     ticks: {
                         color: colors.text,
-                        font: { size: 11, family: "'DM Mono', monospace" },
+                        font: { size: 12, family: "'DM Mono', monospace", weight: '500' },
+                        padding: 12,
                         callback: function(value) {
-                            return '₩' + (value / 1000000).toFixed(0) + 'M';
+                            return '₩' + (value / 1000000).toFixed(0) + '백만';
                         }
                     }
                 },
@@ -346,7 +364,8 @@ function initFinanceChart() {
                     grid: { display: false },
                     ticks: {
                         color: colors.text,
-                        font: { size: 11 }
+                        font: { size: 11 },
+                        padding: 8
                     }
                 }
             }
